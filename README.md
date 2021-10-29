@@ -6,9 +6,9 @@
 
 <div align="center">
 
-# 📦 <br> Language CLI
+# 📦<br>Language CLI
 
-This repository contains the Language CLI for 🙃 Phony Language.
+This repository contains the Language Command Line Interface for 🙃 Phony Language.
 
 </div>
 
@@ -22,19 +22,17 @@ You can install the package via composer:
 composer require phonyland/language-cli
 ```
 
-## ⌨️ Usage
-
 <div align="center">
 
 # 🙃
 
-If you want to start generating fake data with 🙃 Phony Framework,  
+Start generating data with 🙃 Phony Framework,  
 visit the main **[Phony Repository](https://github.com/phonyland/phony)**.
 
 Explore the docs: **[phony.land »](https://phony.land/)**  
-Follow us on Twitter: **[@phonyphp »](https://twitter.com/phonyphp)**
+Follow us on Twitter: **[@phony_land »](https://twitter.com/phony_land)**
 
-**[🙃 Phony Framework](https://phony.land)**  
+**[🙃 Phony Data Generation Framework](https://phony.land)**  
 was created by  
 **[Yunus Emre Deligöz](https://twitter.com/yedeligoez)**  
 under  
