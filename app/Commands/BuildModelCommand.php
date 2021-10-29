@@ -3,6 +3,7 @@
 namespace App\Commands;
 
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use LaravelZero\Framework\Commands\Command;
 use MessagePack\MessagePack;
 use Phonyland\LanguageModel\Model;
@@ -41,10 +42,10 @@ class BuildModelCommand extends Command
                           ->unique(!($this->option('unique') === 'false'))
                           ->excludeOriginals(!($this->option('exclude-originals') === 'false'))
                           ->frequencyPrecision((int) $this->option('frequency-precision'))
-                ->tokenizer->addWordSeparatorPattern(TokenizerFilter::WHITESPACE_SEPARATOR)
-                           ->addWordFilterRule(TokenizerFilter::LATIN_EXTENDED_ALPHABETICAL)
-                           ->addSentenceSeparatorPattern(['.', '?', '!', ':', ';', '\n'])
-                           ->toLowercase();
+                          ->tokenizer->addWordSeparatorPattern(TokenizerFilter::WHITESPACE_SEPARATOR)
+                                     ->addWordFilterRule(TokenizerFilter::LATIN_EXTENDED_ALPHABETICAL)
+                                     ->addSentenceSeparatorPattern(['.', '?', '!', ':', ';', '\n'])
+                                     ->toLowercase();
         });
 
         $this->task('Feeding', function () use ($model) {
@@ -59,8 +60,13 @@ class BuildModelCommand extends Command
             $model->calculate();
         });
 
-        $this->task('Encoding & Compressing', function () use ($model) {
-            File::put(getcwd().'/output.phony', gzencode(MessagePack::pack($model->build())));
+        $filename = Str::snake($this->option('name'));
+
+        $this->task('Encoding & Compressing', function () use ($filename, $model) {
+
+            File::put(getcwd().'/' . $filename . '.phony', gzencode(MessagePack::pack($model->build())));
         });
+
+        $this->info('Model saved as ' . $filename . '.phony');
     }
 }
