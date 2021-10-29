@@ -62,8 +62,6 @@ class BuildModelCommand extends Command
             $model->calculate();
         });
 
-        $filename = Str::snake($this->option('name'));
-
         $modelData = null;
 
         $this->task('Building', function() use ($model, &$modelData) {
@@ -71,12 +69,14 @@ class BuildModelCommand extends Command
         });
 
         $this->task('Packing', function() use (&$modelData) {
-            $modelData = MessagePack::pack($modelData);
+            $modelData = MessagePack::pack(mb_convert_encoding($modelData, 'UTF-8', 'UTF-8'));
         });
 
         $this->task('Compressing', function() use (&$modelData) {
             $modelData = gzencode($modelData);
         });
+
+        $filename = Str::snake($this->argument('path'));
 
         $this->task('Saving', function () use ($filename, &$modelData) {
             File::put(getcwd().'/' . $filename . '.phony', $modelData);
