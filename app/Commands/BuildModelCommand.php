@@ -4,6 +4,7 @@ namespace App\Commands;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use JetBrains\PhpStorm\NoReturn;
 use LaravelZero\Framework\Commands\Command;
 use MessagePack\MessagePack;
 use Phonyland\LanguageModel\Model;
@@ -32,11 +33,12 @@ class BuildModelCommand extends Command
      */
     protected $description = 'Feed, build, and save the model';
 
+    #[NoReturn]
     public function handle(): void
     {
         $model = new Model($this->option('name'));
 
-        $this->task((string) ($this->option('name')), function () use ($model) {
+        $this->task(($this->option('name') . ' Started'), function () use ($model) {
             $model->config->n((int) $this->option('n'))
                           ->minLenght((int) $this->option('min-lenght'))
                           ->unique(!($this->option('unique') === 'false'))
@@ -48,12 +50,12 @@ class BuildModelCommand extends Command
                                      ->toLowercase();
         });
 
-        $this->task('Feeding', function () use ($model) {
+        $this->task('Feeding & Counting', function () use ($model) {
             $data = File::lines(getcwd().'/'.$this->argument('path'));
 
-            foreach ($data as $index => $line) {
+            $this->withProgressBar($data, function($line) use ($model) {
                 $model->feed($line);
-            }
+            });
         });
 
         $this->task('Calculating', function () use ($model) {
@@ -62,9 +64,22 @@ class BuildModelCommand extends Command
 
         $filename = Str::snake($this->option('name'));
 
-        $this->task('Encoding & Compressing', function () use ($filename, $model) {
+        $modelData = null;
 
-            File::put(getcwd().'/' . $filename . '.phony', gzencode(MessagePack::pack($model->build())));
+        $this->task('Building', function() use ($model, &$modelData) {
+            $modelData = $model->build();
+        });
+
+        $this->task('Packing', function() use (&$modelData) {
+            $modelData = MessagePack::pack($modelData);
+        });
+
+        $this->task('Compressing', function() use (&$modelData) {
+            $modelData = gzencode($modelData);
+        });
+
+        $this->task('Saving', function () use ($filename, &$modelData) {
+            File::put(getcwd().'/' . $filename . '.phony', $modelData);
         });
 
         $this->info('Model saved as ' . $filename . '.phony');
