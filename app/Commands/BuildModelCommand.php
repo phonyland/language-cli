@@ -64,12 +64,8 @@ class BuildModelCommand extends Command
 
         $modelData = null;
 
-        $this->task('Building', function() use ($model, &$modelData) {
-            $modelData = $model->build();
-        });
-
-        $this->task('Packing', function() use (&$modelData) {
-            $modelData = MessagePack::pack(mb_convert_encoding($modelData, 'UTF-8', 'UTF-8'));
+        $this->task('Serializing', function() use (&$modelData, $model) {
+            $modelData = serialize($model);
         });
 
         $this->task('Compressing', function() use (&$modelData) {
