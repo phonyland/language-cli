@@ -24,7 +24,8 @@ class BuildModelCommand extends Command
                             {--min-lenght=3 : The minimum length of the word considered in the generation of the model}
                             {--unique=false : Avoid skewing the generation toward the most repeated words in the text corpus}
                             {--exclude-originals=false : Blacklist original words from generation}
-                            {--frequency-precision=7 : Frequency Precision}';
+                            {--frequency-precision=7 : Frequency Precision}
+                            {--sentence-elements=5 : Sentence Elements}';
 
     /**
      * The description of the command.
@@ -44,6 +45,7 @@ class BuildModelCommand extends Command
                           ->unique(!($this->option('unique') === 'false'))
                           ->excludeOriginals(!($this->option('exclude-originals') === 'false'))
                           ->frequencyPrecision((int) $this->option('frequency-precision'))
+                          ->sentenceElements((int) $this->option('sentence-elements'))
                           ->tokenizer->addWordSeparatorPattern(TokenizerFilter::WHITESPACE_SEPARATOR)
                                      ->addWordFilterRule(TokenizerFilter::LATIN_EXTENDED_ALPHABETICAL)
                                      ->addSentenceSeparatorPattern(['.', '?', '!', ':', ';', '\n'])
