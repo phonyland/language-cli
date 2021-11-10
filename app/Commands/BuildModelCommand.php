@@ -8,6 +8,7 @@ use JetBrains\PhpStorm\NoReturn;
 use LaravelZero\Framework\Commands\Command;
 use MessagePack\MessagePack;
 use Phonyland\LanguageModel\Model;
+use Phonyland\NGram\Tokenizer;
 use Phonyland\NGram\TokenizerFilter;
 
 class BuildModelCommand extends Command
@@ -19,37 +20,39 @@ class BuildModelCommand extends Command
      */
     protected $signature = 'build
                             {path : Path of the text file}
-                            {--name=Phony Language Model : A name for the model}
-                            {--n=3 : N-Gram}
-                            {--min-lenght=3 : The minimum length of the word considered in the generation of the model}
-                            {--unique=false : Avoid skewing the generation toward the most repeated words in the text corpus}
-                            {--exclude-originals=false : Blacklist original words from generation}
-                            {--frequency-precision=7 : Frequency Precision}
-                            {--sentence-elements=5 : Sentence Elements}';
+                            {-A=Phony Language Model : A name for the model}
+                            {-N=3 : N-Gram Lenght}
+                            {-M=3 : The minimum length of the word considered}
+                            {-U=false : Avoid skewing the generation toward the most repeated words in the text corpus}
+                            {-E=false : Exclude Originals}
+                            {-P=7 : Frequency Precision}
+                            {-S=5 : Number of Sentence Elements}';
 
     /**
      * The description of the command.
      *
      * @var string
      */
-    protected $description = 'Feed, build, and save the model';
+    protected $description = 'Generate a Phony Language Model';
 
     #[NoReturn]
     public function handle(): void
     {
-        $model = new Model($this->option('name'));
+        $model = new Model($this->argument('-A'));
 
-        $this->task(($this->option('name') . ' Started'), function () use ($model) {
-            $model->config->n((int) $this->option('n'))
-                          ->minLenght((int) $this->option('min-lenght'))
-                          ->unique(!($this->option('unique') === 'false'))
-                          ->excludeOriginals(!($this->option('exclude-originals') === 'false'))
-                          ->frequencyPrecision((int) $this->option('frequency-precision'))
-                          ->sentenceElements((int) $this->option('sentence-elements'))
-                          ->tokenizer->addWordSeparatorPattern(TokenizerFilter::WHITESPACE_SEPARATOR)
-                                     ->addWordFilterRule(TokenizerFilter::LATIN_EXTENDED_ALPHABETICAL)
-                                     ->addSentenceSeparatorPattern(['.', '?', '!', ':', ';', '\n'])
-                                     ->toLowercase();
+        $this->task(($this->argument('-A').' Started'), function () use ($model) {
+            $model->config->n((int) $this->argument('-N'))
+                          ->minLenght((int) $this->argument('-M'))
+                          ->unique(!($this->argument('-U') === 'false'))
+                          ->excludeOriginals(!($this->argument('-E') === 'false'))
+                          ->frequencyPrecision((int) $this->argument('-P'))
+                          ->numberOfSentenceElements((int) $this->argument('-S'))
+                          ->tokenizer((new Tokenizer())
+                              ->addWordSeparatorPattern(TokenizerFilter::WHITESPACE_SEPARATOR)
+                              ->addWordFilterRule(TokenizerFilter::LATIN_EXTENDED_ALPHABETICAL)
+                              ->addSentenceSeparatorPattern(['.', '?', '!', ':', ';', '\n'])
+                              ->toLowercase()
+                          );
         });
 
         $this->task('Feeding & Counting', function () use ($model) {
