@@ -1,16 +1,12 @@
 {
     "name": "phonyland/language-cli",
-    "description": "\uD83D\uDCBB Language CLI for \uD83D\uDE43 Phony Framework",
-    "homepage": "http://phony.land",
     "type": "project",
+    "description": "\ud83d\udcbb Language CLI for \ud83d\ude43 Phony Framework",
+    "homepage": "http://phony.land",
     "license": "MIT",
-    "support": {
-        "issues": "https://github.com/phonyland/language-cli/issues",
-        "source": "https://github.com/phonyland/language-cli"
-    },
     "authors": [
         {
-            "name": "Yunus Emre Deligöz",
+            "name": "Yunus Emre Delig\u00f6z",
             "email": "ye@deligoz.me"
         }
     ],
@@ -18,11 +14,16 @@
         "php": "^8.0"
     },
     "require-dev": {
+        "laminas/laminas-text": "^2.8",
         "laravel-zero/framework": "^8.8",
         "mockery/mockery": "^1.4.3",
         "pestphp/pest": "^1.3",
-        "laminas/laminas-text": "^2.8",
         "phonyland/language-model": "dev-master"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
     },
     "autoload": {
         "psr-4": {
@@ -34,12 +35,32 @@
             "Tests\\": "tests/"
         }
     },
-    "config": {
-        "preferred-install": "dist",
-        "sort-packages": true,
-        "optimize-autoloader": true
-    },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "bin": ["builds/phony-language-cli"]
+    "bin": [
+        "builds/phony-language-cli"
+    ],
+    "scripts": {
+        "post-autoload-dump": [
+            "@normalize",
+            "@validate",
+            "@thanks"
+        ],
+        "lint": "php-cs-fixer fix -v",
+        "normalize": "@composer normalize --ansi --no-interaction --quiet",
+        "test": [
+            "@test:lint",
+            "@test:types",
+            "@test:unit"
+        ],
+        "test:lint": "php-cs-fixer fix -v --dry-run",
+        "test:types": "phpstan analyse --ansi --memory-limit=-1",
+        "test:unit": "pest --colors=always",
+        "thanks": "@composer thanks --ansi --no-interaction --quiet",
+        "validate": "@composer validate --strict --ansi --no-interaction"
+    },
+    "support": {
+        "issues": "https://github.com/phonyland/language-cli/issues",
+        "source": "https://github.com/phonyland/language-cli"
+    }
 }
