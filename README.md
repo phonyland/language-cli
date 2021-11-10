@@ -10,6 +10,8 @@
 
 This repository contains the Language Command Line Interface for 🙃 Phony Language.
 
+<img src="https://raw.githubusercontent.com/phonyland/language-cli/master/docs/screenshot.jpg" alt="Phony Language CLI - Screenshoot">
+
 </div>
 
 ## 🚀 Installation
