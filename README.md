@@ -17,8 +17,6 @@ This repository contains the Language Command Line Interface for 🙃 Phony Lang
 
 ## 🚀 Installation
 
-Requires PHP `>= 8.0`.
-
 You can install the package via composer:
 
 ```console
